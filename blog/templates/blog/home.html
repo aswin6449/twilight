@@ -1,37 +1,197 @@
-{% extends "blog/base.html" %}
-{% block content %}
-    {% for post in posts %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
-              <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+        <link rel="stylesheet" type="text/css" href="{% static 'blog/main.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/home.css' %}">
+
+    <title>Twilight</title>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+      <body style="background: url('{% static 'blog/home.png' %}');">
+
+    <header class="site-header">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #feb1b7;" >
+        <div class="container">
+          <a style="font-family: 'Schoolbell', cursive;font-size: 24px" class="navbar-brand mr-4" href="{% url 'blog-home' %};">Twilight</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarToggle">
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive" href="{% url 'blog-home' %}">Home</a>
+              <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive"  href="{% url 'blog-about' %}">About</a>
             </div>
-            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              {% if user.is_authenticated %}
+                <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive"  href="{% url 'post-create' %}">New Post</a>
+                <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive"  href="{% url 'profile' %}">Profile</a>
+                <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive"  href="{% url 'logout' %}">Logout</a>
+              {% else %}
+                <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive"  href="{% url 'login' %}">Login</a>
+                <a class="nav-item nav-link" style="color: white;font-family: 'Schoolbell', cursive"  href="{% url 'register' %}">Register</a>
+              {% endif %}
+            </div>
           </div>
-        </article>
-    {% endfor %}
-    {% if is_paginated %}
+        </div>
+      </nav>
+    </header>
 
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
+    <!-- ======= Header ======= -->
+     <header id="header">
+      <div class="d-flex flex-column">
+        <div class="profile">
+          <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+          <h1 class="text-light" ><a style="color: #6f1818;font-family: 'Schoolbell', cursive;font-size: 30px;" href="index.html">{{ user.username }}</a></h1>
+          <br />
+          <pre style="color:  #6f1818;font-family: 'Schoolbell', cursive;font-size: 15px;padding-left: 60px;"> Following : 7     Followers : 12</pre>
+        </div>
+       
+        <nav id="navbar" class="nav-menu navbar">
+          <ul>
+            <li>
+              <a href="{% url 'blog-home' %}" class="nav-link scrollto"
+                ><span style="color: #6f1818;;" class="iconify" data-icon="bx:bx-home"></span>
+                <pre style="color: #6f1818;font-family: 'Schoolbell', cursive;font-size: 17px;"> Home</pre>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'profile' %}" class="nav-link scrollto"
+                ><span style="color: #6f1818;" class="iconify" data-icon="whh:profile"></span>
+                <pre style="color: #6f1818;font-family: 'Schoolbell', cursive;font-size: 17px;"> Profile</pre>
+              </a>
+            </li>
+            
+            <li>
+              <a href="{% url 'blog-about' %}" class="nav-link scrollto"
+                ><span style="color:#6f1818;" class="iconify" data-icon="akar-icons:info"></span>
+                <pre style="color: #6f1818;font-family: 'Schoolbell', cursive;font-size: 17px;"> About</pre>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'logout' %}"class="nav-link scrollto"
+                ><span style="color: #6f1818;;" class="iconify" data-icon="bx:bx-log-out-circle"></span></span>
+                <pre style="color: #6f1818;font-family: 'Schoolbell', cursive;font-size: 17px;"> Log out</pre>
+              </a>
+            </li>
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% endif %}
-      {% endfor %}
+          </ul>
+          <br>
+          <a  style="background-color: #6f1818;
 
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
+                          margin-left: 100px;
+                            color: white;
+                            width: 150px;
+                            font-size: 20px;
+                            font-family: 'Schoolbell', cursive;
+" class="btn btn-danger" href="{% url 'post-create' %}" role="button">Post it now!</a>
+      </nav>
 
-    {% endif %}
-{% endblock content %}
+          
+       <!---nav-menu -->
+      </div>
+    </header>
+    <!-- End Header -->
+    <!---Section1-->
+    <section class="bgimage" id="home">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <!---------->
+              <div
+                class="container pt-3"
+                style="
+                  border-radius: 20px;
+                  width: 100%;
+                  height: 550px;
+                  
+                "
+              >
+                <div
+                  class="offset-md-2 offset-lg-2 col-lg-8 col-md-8 col-sm-12 col-xs-12"
+                >
+                  <form class="needs-validation" novalidate>
+                    <div class="row type_margin" style="margin-top: 50px;background-color: #FFF0F0;border-radius: 10px;width: 1000px; height: auto;margin-top: 25px;margin-left: 90px;">
+                      <div
+                        class="offset-md-1 col-lg-7 col-md-7 col-sm-12 col-xs-12"
+                      >
+                      {% for post in posts %}
+                      <div style="padding-right:10px;width: 800px;">
+                        <article class="media content-section" style="background-color: white;border-radius: 30px;height: auto;margin-top: 30px;margin-left: 0px;margin-right: 10px;padding-right: 60px;float: right;width: auto;"><br>
+                          <img class="rounded-circle article-img" style="padding: 15px;float: left;" src="{{ post.author.profile.image.url }}
+                        " width="90px" height="90px" >
+                            <!-- <img style="padding: 15px;float: left;" class="rounded-circle article-img" src="/profile.jpg" width="90px" height="90px"> -->
+                            <div class="media-body" style="padding-left: 100px;">
+                              <div class="article-metadata" style="align-items:flex-end">
+                                <a style="color: black;font-family: 'Schoolbell', cursive;font-size: 30px;" class="mr-2" href="#">{{ post.author }}   </a>
+                                  <h2><a class="article-title" style="font-family: 'Schoolbell', cursive;" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
+
+                                <small class="text-muted" style="font-family: 'Schoolbell', cursive;">{{ post.date_posted|date:"F d, Y" }}</small>
+                              </div>
+                              
+                              <p class="article-content" style="color: black;padding-left: 5px;font-family: 'Schoolbell', cursive;">{{ post.content }}</p><br>
+                            </div>
+                            
+                          </article>
+                          
+
+                      </div>
+                        {% endfor %}
+
+                      
+
+                      </div>
+                    </div>
+
+                  </form>
+
+                  
+                </div>
+
+              </div>
+
+  
+              <!----------------------->
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>
