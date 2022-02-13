@@ -8,11 +8,15 @@ from .views import (
     UserPostListView,
     AddCommentView,
     LikeView,
+    landing,
+    welcome,
 )
 from . import views
 
 urlpatterns = [
-    path('', PostListView.as_view(), name='blog-home'),
+    path('', landing, name='landing-page'),
+    path('welcome/',welcome,name="welcome-page"),
+    path('test/', PostListView.as_view(), name='blog-home'),
     path('user/<str:username>', UserPostListView.as_view(), name='user-posts'),
     path('post/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
     path('post/new/', PostCreateView.as_view(), name='post-create'),
@@ -20,5 +24,5 @@ urlpatterns = [
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
     path('about/', views.about, name='blog-about'),
     path('like/<int:pk>', LikeView, name='like_post'),
-    path('post/<int:pk>/comment/', AddCommentView.as_view(), name='add_comment'),
+    path('post/<int:pk>/comment', AddCommentView.as_view(), name='add_comment'),
 ]
