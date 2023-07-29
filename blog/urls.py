@@ -15,8 +15,8 @@ from . import views
 
 urlpatterns = [
     path('', landing, name='landing-page'),
-    path('welcome/',welcome,name="welcome-page"),
-    path('test/', PostListView.as_view(), name='blog-home'),
+    path('welcome/', welcome, name="welcome-page"),
+    path('home/', PostListView.as_view(), name='blog-home'),
     path('user/<str:username>', UserPostListView.as_view(), name='user-posts'),
     path('post/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
     path('post/new/', PostCreateView.as_view(), name='post-create'),
